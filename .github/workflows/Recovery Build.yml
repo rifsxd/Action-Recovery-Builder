@@ -227,10 +227,29 @@ jobs:
         cd /usr/bin
         sudo ln -sf python2 python
 
+    - name: Set up ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ${{ runner.os }}-${{ github.sha }}
+        restore-keys: ${{ runner.os }}
+
+    - name: Prepare ccache directories
+      run: |
+        HOME_CCACHE_DIR=${{ github.workspace }}/../.ccache
+        BIND_CCACHE_DIR=/mnt/ccache
+
+        echo "Creating/Binding CCACHE directories ..."
+        if [ ! -d "$HOME_CCACHE_DIR" ]; then
+            mkdir $HOME_CCACHE_DIR
+        fi
+
+        sudo mkdir -p "$BIND_CCACHE_DIR"
+        sudo mount --bind "$HOME_CCACHE_DIR" "$BIND_CCACHE_DIR"
+        
+
     - name: Building recovery (AOSP)
       if: ${{ steps.buildtree.outputs.value == 'aosp' }} 
       run: |
-        export USE_CCACHE=0
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         if [ ${{ inputs.RECOVERY_INSTALLER }} = true ] && [ ${{ steps.recoveryinstaller.outcome == 'success' }} ]; then
@@ -243,7 +262,6 @@ jobs:
     - name: Building recovery (Omni)
       if: ${{ steps.buildtree.outputs.value == 'omni' }} 
       run: |
-        export USE_CCACHE=0
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         if [ ${{ inputs.RECOVERY_INSTALLER }} = true ] && [ ${{ steps.recoveryinstaller.outcome == 'success' }} ]; then
