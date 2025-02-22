@@ -14,19 +14,19 @@ on:
       DEVICE_TREE_URL:
         description: Device Tree URL
         required: true
-        default: https://gitlab.com/OrangeFox/device/lavender
+        default: https://github.com/rifsxd/device_xiaomi_unified_recovery
       DEVICE_TREE_BRANCH:
         description: Device Tree Branch
         required: true
-        default: fox_12.1
+        default: fox-12.1
       DEVICE_PATH:
         description: Path the device tree should be synced to, relative to source root
         required: true
-        default: device/xiaomi/lavender
+        default: device/xiaomi/sapphire
       DEVICE_NAME:
         description: Device Name from tree (should match name on twrp_<DEVICE_NAME>.mk)
         required: true
-        default: lavender
+        default: sapphire
       BUILD_TARGET:
         type: choice
         description: Partition containing recovery ramdisk
@@ -43,7 +43,7 @@ on:
 jobs:
   build:
     if: github.event.repository.owner.id == github.event.sender.id
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     # You can use either of the ubuntu-20.04 or ubuntu-22.04 runner
     steps:
     - name: Display Run Parameters
@@ -116,6 +116,7 @@ jobs:
         set +e
         source build/envsetup.sh
         set -e
+        export USE_CCACHE=0
         export ALLOW_MISSING_DEPENDENCIES=true
         export FOX_BUILD_DEVICE=${{ inputs.DEVICE_NAME }}
         export LC_ALL="C"
