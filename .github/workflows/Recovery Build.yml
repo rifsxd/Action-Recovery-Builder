@@ -69,6 +69,12 @@ jobs:
       uses: pierotofy/set-swap-space@master
       with:
         swap-size-gb: 24
+    
+    - name: Set up ccache
+      uses: hendrikmuhs/ccache-action@v1.2     
+      with:         
+        key: ${{ runner.os }}-${{ github.sha }}         
+        restore-keys: ${{ runner.os }}
 
     - name: Prepare the build environment
       run: |
@@ -111,12 +117,32 @@ jobs:
         fi
       working-directory: fox_${{ inputs.MANIFEST_BRANCH }}
 
+    - name: Set up ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ${{ runner.os }}-${{ github.sha }}
+        restore-keys: ${{ runner.os }}
+
+    - name: Prepare ccache directories
+      run: |
+        HOME_CCACHE_DIR=${{ github.workspace }}/../.ccache
+        BIND_CCACHE_DIR=/mnt/ccache
+
+        echo "Creating/Binding CCACHE directories ..."
+        if [ ! -d "$HOME_CCACHE_DIR" ]; then
+            mkdir $HOME_CCACHE_DIR
+        fi
+
+        sudo mkdir -p "$BIND_CCACHE_DIR"
+        sudo mount --bind "$HOME_CCACHE_DIR" "$BIND_CCACHE_DIR"
+        
+      working-directory: ${{ github.workspace }}
+
     - name: Build it
       run: |
         set +e
         source build/envsetup.sh
         set -e
-        export USE_CCACHE=0
         export ALLOW_MISSING_DEPENDENCIES=true
         export FOX_BUILD_DEVICE=${{ inputs.DEVICE_NAME }}
         export LC_ALL="C"
