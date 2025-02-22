@@ -10,19 +10,19 @@ on:
       DEVICE_TREE_URL:
         description: Device Tree URL
         required: true
-        default: https://github.com/PitchBlackRecoveryProject/android_device_infinix_X6739-pbrp
+        default: https://github.com/rifsxd/device_xiaomi_unified_recovery
       DEVICE_TREE_BRANCH:
         description: Device Tree Branch
         required: true
-        default: android-12.1
+        default: pbrp-12.1
       DEVICE_PATH:
         description: Path the device tree should be synced to, relative to source root
         required: true
-        default: device/infinix/X6739
+        default: device/xiaomi/sapphire
       DEVICE_MAKEFILE:
         description: 'Name of device-specific makefile from tree (format: <PREFIX>_<DEVICE_NAME>)'
         required: true
-        default: pb_X6739
+        default: pb_sapphire
       BUILD_TARGET:
         type: choice
         description: Partition containing recovery ramdisk
@@ -36,7 +36,7 @@ on:
 jobs:
   build:
     if: github.event.repository.owner.id == github.event.sender.id
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     # You can use either of the ubuntu-20.04 or ubuntu-22.04 runner
     steps:
     - name: Display Run Parameters
@@ -124,6 +124,7 @@ jobs:
 
     - name: Building recovery
       run: |
+        export USE_CCACHE=0
         . build/envsetup.sh
         lunch ${{ inputs.DEVICE_MAKEFILE }}-eng
         mka pbrp
