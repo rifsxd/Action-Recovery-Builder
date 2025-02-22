@@ -122,9 +122,28 @@ jobs:
       run: |
         sudo apt -y install python2
 
+    - name: Set up ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ${{ runner.os }}-${{ github.sha }}
+        restore-keys: ${{ runner.os }}
+
+    - name: Prepare ccache directories
+      run: |
+        HOME_CCACHE_DIR=${{ github.workspace }}/../.ccache
+        BIND_CCACHE_DIR=/mnt/ccache
+
+        echo "Creating/Binding CCACHE directories ..."
+        if [ ! -d "$HOME_CCACHE_DIR" ]; then
+            mkdir $HOME_CCACHE_DIR
+        fi
+
+        sudo mkdir -p "$BIND_CCACHE_DIR"
+        sudo mount --bind "$HOME_CCACHE_DIR" "$BIND_CCACHE_DIR"
+        
+
     - name: Building recovery
       run: |
-        export USE_CCACHE=0
         . build/envsetup.sh
         lunch ${{ inputs.DEVICE_MAKEFILE }}-eng
         mka pbrp
