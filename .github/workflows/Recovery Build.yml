@@ -18,11 +18,11 @@ on:
       DEVICE_TREE_URL:
         description: Device Tree URL
         required: true
-        default: https://github.com/rifsxd/device_xiaomi_unified_recovery
+        default: https://github.com/rifsxd/android_device_xiaomi_sapphire
       DEVICE_TREE_BRANCH:
         description: Device Tree Branch
         required: true
-        default: twrp-12.1
+        default: fox_12.1
       DEVICE_PATH:
         description: Path the device tree should be synced to, relative to source root
         required: true
